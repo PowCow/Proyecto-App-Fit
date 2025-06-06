@@ -4,7 +4,7 @@ Alimento (por 100 gramos),Calorias (Kcal.),Carbohidratos (g.),Proteinas (g.),Gra
 Acedias Fritas,256,12,17,16,0
 Aceite de almendras,884,0,0,100,0
 Aceite de cacahuete,884,0,0,100,0
-Aceite de coco,892,0,0,"99,06",0
+Aceite de coco,892,0,0,"99.06",0
 Aceite de girasol,884,0,0,100,0
 Aceite de maiz,900,0,0,100,0
 Aceite de nuez,884,0,0,100,0
@@ -12,32 +12,32 @@ Aceite de oliva,884,0,0,100,0
 Aceite de sesamo,884,0,0,100,0
 Aceite de soja,884,0,0,100,0
 Aceite Uva,899,0,0,100,0
-Aceitunas negras,105,"6,06","0,88","9,54",3
-Aceitunas verdes,145,"3,84","1,03","15,32","3,3"
-Aceitunas verdes rellenas,128,"4,02","1,04","13,22","3,1"
-Acelga cruda,19,"3,74","1,8","0,2","1,6"
-Acerolas,31,"7,5","0,4","0,3","1,1"
-Aderezo Cesar,542,"3,3","2,17","57,85","0,5"
-Aderezo de miel y mostaza,464,"23,33","0,87","40,83","0,4"
-Aderezo de queso azul o roquefort,484,"4,77","1,37","51,1","0,4"
-Aderezo de yogurt,220,"11,75","3,45","18,27","0,1"
-"Agua carbonatada, endulzada",34,"8,8",0,0,0
+Aceitunas negras,105,"6.06","0.88","9.54",3
+Aceitunas verdes,145,"3.84","1.03","15.32","3.3"
+Aceitunas verdes rellenas,128,"4.02","1.04","13.22","3.1"
+Acelga cruda,19,"3.74","1.8","0.2","1.6"
+Acerolas,31,"7.5","0.4","0.3","1.1"
+Aderezo Cesar,542,"3.3","2.17","57.85","0.5"
+Aderezo de miel y mostaza,464,"23.33","0.87","40.83","0.4"
+Aderezo de queso azul o roquefort,484,"4.77","1.37","51.1","0.4"
+Aderezo de yogurt,220,"11.75","3.45","18.27","0.1"
+"Agua carbonatada, endulzada",34,"8.8",0,0,0
 Agua Manantial,0,0,0,0,0
-Aguacate crudo,160,"8,53",2,"14,66","6,7"
-Ajo crudo,149,"33,06","6,36","0,5","2,1"
-Albahaca cruda,23,"2,65","3,15","0,64","1,6"
-Albaricoque crudo,48,"11,12","1,4","0,39",2
-"Albaricoque, cocido o enlatado, en almíbar espeso",83,"21,47","0,53","0,08","1,6"
-"Albaricoque, seco, crudo",241,"62,64","3,39","0,51","7,3"
-Albondigas suecas con crema o salsa blanca,170,"7,22","12,43","9,88","0,3"
-"Alcachofa, cocida, enlatada, hecha con aceite.",67,"8,89","3,01","3,1","4,5"
-"Alcachofa, cocida, fresca, hecha con aceite.",74,"11,57","2,8","2,95","5,5"
-Alcachofas,23,"2,3","2,9","0,2","9,4"
-"Alitas de pollo, asador",257,"0,6","23,42","18,04",0
-Chirla,86,"3,57","14,67","0,96",0
-Almejas enlatadas,108,"4,46","18,34","1,2",0
-Almendras saladas,601,"20,18","20,13","53,43","10,5"
-Almendras sin sal,607,"20,38","20,33","53,96","10,6"
+Aguacate crudo,160,"8.53",2,"14.66","6.7"
+Ajo crudo,149,"33.06","6.36","0.5","2.1"
+Albahaca cruda,23,"2.65","3.15","0.64","1.6"
+Albaricoque crudo,48,"11.12","1.4","0.39",2
+"Albaricoque, cocido o enlatado, en almíbar espeso",83,"21.47","0.53","0.08","1.6"
+"Albaricoque, seco, crudo",241,"62.64","3.39","0.51","7.3"
+Albondigas suecas con crema o salsa blanca,170,"722","12.43","9.88","0.3"
+"Alcachofa, cocida, enlatada, hecha con aceite.",67,"8.89","3.01","3.1","4.5"
+"Alcachofa, cocida, fresca, hecha con aceite.",74,"11.57","2.8","2.95","5.5"
+Alcachofas,23,"2.3","2.9","0.2","9.4"
+"Alitas de pollo, asador",257,"0.6","23.42","18.04",0
+Chirla,86,"3.57","14.67","0.96",0
+Almejas enlatadas,108,"4.46","18.34","1.2",0
+Almendras saladas,601,"20.18","20.13","53.43","10.5"
+Almendras sin sal,607,"20.38","20.33","53.96","10.6"
 Almendras sin tostar,579,"21,55","21,15","49,93","12,5"
 "Alubias blancas, enlatadas, escurridas, sin grasa añadida",168,"30,91","10,84","0,57","7,2"
 Anacardo,609,"30,3","12,12","53,03",3
