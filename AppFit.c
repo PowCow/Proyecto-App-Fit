@@ -61,6 +61,54 @@ Map *ReadCsv_AddToMap(const char *nombreArchivo)
     return mapaDeAlimentos;
 }
 
+float calcularIMC(Usuario *usuario) 
+{
+    float alturaMetros = usuario->alturaCm / 100.0f;
+    return usuario->pesoKg / (alturaMetros * alturaMetros);
+}
+
+
+void mostrarAlimentosPorPagina(Map *mapaAlimentos)
+{
+    int contador = 0;
+    int numPagina = 1;
+    MapPair *pair = map_first(mapaAlimentos);
+    while (pair != NULL)
+    {
+        char *nombreAlimento = (char *)pair->key;
+        Alimento *alimento = (Alimento *)pair->value;
+
+        printf("Alimento: %s\n", nombreAlimento);
+        printf("Calorias: %d\n", alimento->valorNutricional);
+        printf("Proteinas: %.2f g\n", alimento->proteinas);
+        printf("Carbohidratos: %.2f g\n", alimento->carbohidratos);
+        printf("Grasas: %.2f g\n", alimento->grasas);
+        printf("Fibra: %.2f g\n", alimento->fibra);
+        printf("-------------------------\n");
+        contador++;
+        
+
+        if (contador % 5 == 0) 
+        {
+            printf("Pagina %d\n", numPagina);
+            printf("Presione Enter para continuar...\n");
+            getchar(); // Espera a que el usuario presione Enter
+            numPagina++;
+        }
+        {
+            printf("Pagina %d\n", numPagina);
+
+        }
+        pair = map_first(mapaAlimentos);
+    }
+    if (contador % 5 != 0) 
+    {
+        printf("Pagina %d\n", numPagina);
+    }
+    printf("Fin de la lista de alimentos.\n");
+
+}
+
 void menufitApp() 
 {
     
