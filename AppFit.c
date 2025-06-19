@@ -10,6 +10,8 @@ typedef struct{
     short edad ;
     char sexo ; // 'M' masculino, 'F' femenino
     short objetivo ; // 1:ganar masa muscular, 2:perder grasa, 3:recomposicion corporal
+    float imc;
+    int caloriasDiarias ; 
 } Usuario ;
 typedef struct{
     int valorNutricional ;
@@ -61,17 +63,66 @@ Map *ReadCsv_AddToMap(const char *nombreArchivo)
     return mapaDeAlimentos;
 }
 
-float calcularIMC(Usuario *usuario) 
+void ingresarDatosPersona(Usuario *persona)
 {
-    float alturaMetros = usuario->alturaCm / 100.0f;
-    return usuario->pesoKg / (alturaMetros * alturaMetros);
-}
+    printf("Ingrese su altura en cm: ");
+    scanf("%hd", &persona->alturaCm);
+    printf("\nIngrese su peso en kg: ");
+    scanf("%hd", &persona->pesoKg);
+    printf("\nIngrese su edad: ");
+    scanf("%hd", &persona->edad);
+    printf("\nIngrese su sexo (M/F): ");
+    scanf(" %c", &persona->sexo);
+    printf("\nIngrese su objetivo (1: ganar masa muscular, 2: perder grasa, 3: recomposición corporal): ");
+    scanf("%hd", &persona->objetivo);
+    getchar(); // Limpiar el buffer de entrada
+    persona->imc = (float)persona->pesoKg / ((float)persona->alturaCm / 100.0f * (float)persona->alturaCm / 100.0f);
 
+    float caloriasBase;
+    if (persona->sexo == 'M' || persona->sexo == 'm') 
+    {
+        caloriasBase = 10 * persona->pesoKg + 6.25f * persona->alturaCm - 5 * persona->edad + 5;
+    } 
+    else if (persona->sexo == 'F' || persona->sexo == 'f') 
+    {
+        caloriasBase = 10 * persona->pesoKg + 6.25f * persona->alturaCm - 5 * persona->edad - 161;
+    } 
+    
+    switch (persona->objetivo) 
+    {
+        case 1: 
+            persona->caloriasDiarias = caloriasBase + 500; 
+            break;
+        case 2: 
+            persona->caloriasDiarias = caloriasBase - 500; 
+            break;
+        case 3: 
+            persona->caloriasDiarias = caloriasBase; 
+            break;
+        default: 
+            printf("Objetivo no válido. Se establecerá a mantenimiento.\n");
+            persona->caloriasDiarias = caloriasBase; 
+            break;
+    }
+    printf("\nDatos ingresados:\n");
+    printf("Altura: %hd cm\n", persona->alturaCm);
+    printf("Peso: %hd kg\n", persona->pesoKg);
+    printf("Edad: %hd años\n", persona->edad);
+    printf("Sexo: %c\n", persona->sexo);
+    printf("Objetivo: %hd\n", persona->objetivo);
+    printf("IMC: %.2f\n", persona->imc);
+    printf("Calorías diarias recomendadas: %d\n", persona->caloriasDiarias);
+}
 
 void mostrarAlimentosPorPagina(Map *mapaAlimentos)
 {
     int contador = 0;
     int numPagina = 1;
+    int porPagina;
+    printf("Ingrese la cantidad de alimentos que desea ver por pagina: ");
+    scanf("%d", &porPagina);
+    getchar(); 
+
     MapPair *pair = map_first(mapaAlimentos);
     while (pair != NULL)
     {
@@ -88,20 +139,16 @@ void mostrarAlimentosPorPagina(Map *mapaAlimentos)
         contador++;
         
 
-        if (contador % 5 == 0) 
+        if (contador % porPagina == 0) 
         {
             printf("Pagina %d\n", numPagina);
             printf("Presione Enter para continuar...\n");
             getchar(); // Espera a que el usuario presione Enter
             numPagina++;
         }
-        {
-            printf("Pagina %d\n", numPagina);
-
-        }
-        pair = map_first(mapaAlimentos);
+        pair = map_next(mapaAlimentos);
     }
-    if (contador % 5 != 0) 
+    if (contador % porPagina != 0) 
     {
         printf("Pagina %d\n", numPagina);
     }
