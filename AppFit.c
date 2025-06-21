@@ -77,7 +77,7 @@ void ingresarDatosPersona(Usuario *persona)
     scanf("%hd", &persona->edad);
     printf("\nIngrese su sexo (M/F): ");
     scanf(" %c", &persona->sexo);
-    printf("\nIngrese su objetivo (1: ganar masa muscular, 2: perder grasa, 3: recomposición corporal): ");
+    printf("\nIngrese su objetivo (1: ganar masa muscular, 2: perder grasa, 3: recomposicion corporal): ");
     scanf("%hd", &persona->objetivo);
     getchar(); // Limpiar el buffer de entrada
     persona->imc = (float)persona->pesoKg / ((float)persona->alturaCm / 100.0f * (float)persona->alturaCm / 100.0f);
@@ -104,7 +104,7 @@ void ingresarDatosPersona(Usuario *persona)
         persona->caloriasDiarias = caloriasBase;
         break;
     default:
-        printf("Objetivo no válido. Se establecerá a mantenimiento.\n");
+        printf("Objetivo no valido. Se establecera a mantenimiento.\n");
         persona->caloriasDiarias = caloriasBase;
         break;
     }
@@ -115,7 +115,7 @@ void ingresarDatosPersona(Usuario *persona)
     printf("Sexo: %c\n", persona->sexo);
     printf("Objetivo: %hd\n", persona->objetivo);
     printf("IMC: %.2f\n", persona->imc);
-    printf("Calorías diarias recomendadas: %d\n", persona->caloriasDiarias);
+    printf("Calorias diarias recomendadas: %d\n", persona->caloriasDiarias);
 }
 
 void mostrarAlimentosPorPagina(Map *mapaAlimentos)
@@ -157,6 +157,7 @@ void mostrarAlimentosPorPagina(Map *mapaAlimentos)
     }
     printf("Fin de la lista de alimentos.\n");
 }
+
 void verHistorialAlimentos(List *historial)
 {
     if (list_is_empty(historial))
@@ -188,7 +189,7 @@ void eliminacionUltimaComida(List **historial)
     Alimento *ultimoAlimento = (Alimento *)list_remove_last(*historial);
     if (ultimoAlimento != NULL)
     {
-        printf("Se ha eliminado el alimento: %s\n", ultimoAlimento->nombre);
+        printf("Se ha eliminado el alimento: '%s'\n", ultimoAlimento->nombre);
         free(ultimoAlimento);
     }
     else
@@ -211,7 +212,7 @@ void agregarComidaPropia(Map **mapaAlimentos)
 
     printf("Ingrese el valor nutricional (calorías): ");
     scanf("%d", &nuevoAlimento->valorNutricional);
-    printf("Ingrese la cantidad de proteínas (g): ");
+    printf("Ingrese la cantidad de proteinas (g): ");
     scanf("%f", &nuevoAlimento->proteinas);
     printf("Ingrese la cantidad de carbohidratos (g): ");
     scanf("%f", &nuevoAlimento->carbohidratos);
@@ -224,27 +225,32 @@ void agregarComidaPropia(Map **mapaAlimentos)
     printf("Nuevo alimento agregado exitosamente.\n");
     return;
 }
+
+void agregarComidaConsumida(List **historial, Map **mapaAlimentos)
+{
+    char nombreAlimento[100];
+    printf("Ingrese el nombre del alimento consumido: ");
+    fgets(nombreAlimento, sizeof(nombreAlimento), stdin); 
+    nombreAlimento[strcspn(nombreAlimento, "\n")] = 0; 
+
+    MapPair *pair = map_find(*mapaAlimentos, nombreAlimento);
+    if (pair == NULL) {
+        printf("El alimento '%s' no se encuentra en el mapa de alimentos. \n", nombreAlimento);
+        return;
+    }
+    Alimento *alimento = (Alimento *)pair->value;
+    Alimento *nuevoAlimento = malloc(sizeof(Alimento));
+    if (nuevoAlimento == NULL) {
+        printf("Error al asignar memoria para el nuevo alimento.\n");
+        exit(EXIT_FAILURE);
+    }
+    *nuevoAlimento = *alimento; // Copiar los datos del alimento encontrado
+    list_pushBack(*historial, nuevoAlimento);
+    printf("Alimento '%s' agregado al historial de alimentos correctamente.\n", nombreAlimento);
+}
+
 void menufitApp()
 {
-    printf("Bienvenido a la AppFit!\n");
-    int opcion;
-    do
-    {
-        printf("Menu:\n");
-        printf("1. Ingresar datos personales\n");
-        printf("2.Cargar alimentos desde CSV\n");
-        printf("3. Ver alimentos\n");
-        printf("4.Ver historial de alimentos\n");
-        print("5. Planificar plan semanmal\n");
-        printf("6. Eliminar ultima comida ingerida\n");
-        printf("7. Conteo de calorias y meta diaria\n");
-        printf("8.Agregar comida propia\n");
-        printf("9. Salir\n");
-        printf("Seleccione una opcion: ");
-        scanf("%d", &opcion);
-        getchar(); // Limpiar el buffer de entrada
-
-    } while (opcion != 9);
     Usuario usuario;
     Map *mapaAlimentos = NULL;
     List *historialAlimentos = list_create();
@@ -253,58 +259,85 @@ void menufitApp()
         printf("Error al crear el historial de alimentos.\n");
         return;
     }
-    switch (opcion)
-    {
-    case 1:
-        ingresarDatosPersona(&usuario);
-        break;
-    case 2:
-        mapaAlimentos = ReadCsv_AddToMap("alimentos.csv");
-        if (mapaAlimentos == NULL)
-        {
-            printf("Error al cargar los alimentos.\n");
-        }
-        else
-        {
-            printf("Alimentos cargados exitosamente.\n");
-        }
-        break;
-    case 3:
-        if (mapaAlimentos != NULL)
-        {
-            mostrarAlimentosPorPagina(mapaAlimentos);
-        }
-        else
-        {
-            printf("No hay alimentos cargados.\n");
-        }
-        break;
-    case 4:
-        verHistorialAlimentos(historialAlimentos);
-        break;
-    case 5:
-        printf("Planificación semanal aún no implementada.\n");
-        break;
-    case 6:
-        eliminacionUltimaComida(&historialAlimentos);
-        break;
-    case 7:
-        conteoCaloriasYMetaDiaria(historialAlimentos, &usuario);
-        break;
-    case 8:
-        agregarComidaPropia(&mapaAlimentos);
-        break;
-    case 9:
-        printf("Saliendo de la AppFit. ¡Hasta luego!\n");
-        return;
 
-    default:
-        printf("Opcion no valida.\n");
-    }
+    printf("Bienvenido a FitFuel!\n");
+    int opcion;
+    do
+    {
+        printf("Menu:\n");
+        printf("1. Ingresar datos personales\n");
+        printf("2.Cargar alimentos desde CSV\n");
+        printf("3. Ver alimentos\n");
+        printf("4.Ver historial de alimentos\n");
+        printf("5. Planificar plan semanmal\n");
+        printf("6. Eliminar ultima comida ingerida\n");
+        printf("7. Conteo de calorias y meta diaria\n");
+        printf("8.Agregar comida propia\n");
+        printf("9. Agregar comida consumida\n");
+        printf("10. Salir\n");
+        printf("Seleccione una opcion: ");
+        scanf("%d", &opcion);
+        getchar(); // Limpiar el buffer de entrada
+
+
+        switch (opcion)
+        {
+            case 1:
+                ingresarDatosPersona(&usuario);
+                break;
+            case 2:
+                mapaAlimentos = ReadCsv_AddToMap("alimentos.csv");
+
+                if (mapaAlimentos == NULL)
+                {
+                    printf("Error al cargar los alimentos.\n");
+                }
+                else
+                {
+                    printf("Alimentos cargados exitosamente.\n");
+                }
+                break;
+            case 3:
+                if (mapaAlimentos != NULL)
+                {
+                    mostrarAlimentosPorPagina(mapaAlimentos);
+                }
+                else
+                {
+                    printf("No hay alimentos cargados.\n");
+                }
+                break;
+            case 4:
+                verHistorialAlimentos(historialAlimentos);
+                break;
+            case 5:
+                printf("Planificacion semanal aun no implementada.\n");
+                break;
+            case 6:
+                eliminacionUltimaComida(&historialAlimentos);
+                break;
+            case 7:
+                conteoCaloriasYMetaDiaria(historialAlimentos, &usuario);
+                break;
+            case 8:
+                agregarComidaPropia(&mapaAlimentos);
+                break;
+            case 9:
+                agregarComidaConsumida(historialAlimentos, mapaAlimentos);
+            case 10:
+                printf("Saliendo de FitFuel. ¡Hasta luego!\n");
+                return;
+
+            default:
+                printf("Opcion no valida.\n");
+        }
+    } while (opcion != 10);
+    
+    
 }
 
 int main()
 {
-
+    menufitApp();
     return 0;
 }
