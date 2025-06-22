@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 #include "tdas/list.h"
 #include "tdas/map.h"
 
@@ -24,9 +25,52 @@ typedef struct
     float fibra;         // en gramos
 } Alimento;
 
-int is_equal_string(const char *str1, const char *str2)
+int is_equal_string(void *str1, void *str2)
 {
-    return strcmp(str1, str2) == 0;
+    return strcmp((const char*)str1, (const char*)str2) == 0;
+}
+
+void printfRojo(const char *mensaje) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
+    printf("%s", mensaje);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);   
+}
+
+void printfVerde(const char *mensaje) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    printf("%s", mensaje);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);   
+}
+
+void printfProgresivo(const char *mensaje, int delay) {
+    while (*mensaje) {
+        putchar(*mensaje++);
+        fflush(stdout);
+        Sleep(delay); // Delay en milisegundos
+    }
+    printf("\n");
+}
+
+void printfProgresivoColor(const char *mensaje, WORD color, int delay) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hConsole == INVALID_HANDLE_VALUE) return;
+
+    CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+    WORD originalColor = consoleInfo.wAttributes;
+
+    SetConsoleTextAttribute(hConsole, color);
+
+    for (int i = 0; mensaje[i] != '\0'; i++) {
+        putchar(mensaje[i]);
+        fflush(stdout);
+        Sleep(delay); // Delay en milisegundos
+    }
+
+    SetConsoleTextAttribute(hConsole, originalColor);
+    putchar('\n');
 }
 
 Map *ReadCsv_AddToMap(const char *nombreArchivo)
@@ -111,7 +155,7 @@ void ingresarDatosPersona(Usuario *persona)
     printf("\nDatos ingresados:\n");
     printf("Altura: %hd cm\n", persona->alturaCm);
     printf("Peso: %hd kg\n", persona->pesoKg);
-    printf("Edad: %hd años\n", persona->edad);
+    printf("Edad: %hd anyos\n", persona->edad);
     printf("Sexo: %c\n", persona->sexo);
     printf("Objetivo: %hd\n", persona->objetivo);
     printf("IMC: %.2f\n", persona->imc);
@@ -160,7 +204,7 @@ void mostrarAlimentosPorPagina(Map *mapaAlimentos)
 
 void verHistorialAlimentos(List *historial)
 {
-    if (list_is_empty(historial))
+    if (list_size(historial) == 0)
     {
         printf("No hay alimentos en el historial.\n");
         return;
@@ -181,12 +225,12 @@ void verHistorialAlimentos(List *historial)
 }
 void eliminacionUltimaComida(List **historial)
 {
-    if (list_is_empty(*historial))
+    if (list_size(*historial) == 0)
     {
         printf("No hay alimentos en el historial para eliminar.\n");
         return;
     }
-    Alimento *ultimoAlimento = (Alimento *)list_remove_last(*historial);
+    Alimento *ultimoAlimento = (Alimento *)list_popBack(*historial);
     if (ultimoAlimento != NULL)
     {
         printf("Se ha eliminado el alimento: '%s'\n", ultimoAlimento->nombre);
@@ -226,14 +270,14 @@ void agregarComidaPropia(Map **mapaAlimentos)
     return;
 }
 
-void agregarComidaConsumida(List **historial, Map **mapaAlimentos)
+void agregarComidaConsumida(List *historial, Map *mapaAlimentos)
 {
     char nombreAlimento[100];
     printf("Ingrese el nombre del alimento consumido: ");
     fgets(nombreAlimento, sizeof(nombreAlimento), stdin); 
     nombreAlimento[strcspn(nombreAlimento, "\n")] = 0; 
 
-    MapPair *pair = map_find(*mapaAlimentos, nombreAlimento);
+    MapPair *pair = map_search(mapaAlimentos, nombreAlimento);
     if (pair == NULL) {
         printf("El alimento '%s' no se encuentra en el mapa de alimentos. \n", nombreAlimento);
         return;
@@ -245,12 +289,15 @@ void agregarComidaConsumida(List **historial, Map **mapaAlimentos)
         exit(EXIT_FAILURE);
     }
     *nuevoAlimento = *alimento; // Copiar los datos del alimento encontrado
-    list_pushBack(*historial, nuevoAlimento);
+    list_pushBack(historial, nuevoAlimento);
     printf("Alimento '%s' agregado al historial de alimentos correctamente.\n", nombreAlimento);
 }
 
 void menufitApp()
 {
+    WORD rojo = FOREGROUND_RED | FOREGROUND_INTENSITY;
+    WORD verde = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+
     Usuario usuario;
     Map *mapaAlimentos = NULL;
     List *historialAlimentos = list_create();
@@ -260,22 +307,22 @@ void menufitApp()
         return;
     }
 
-    printf("Bienvenido a FitFuel!\n");
+    printfProgresivo("Bienvenido a FitFuel!\n\n", 10);
     int opcion;
     do
     {
-        printf("Menu:\n");
-        printf("1. Ingresar datos personales\n");
-        printf("2.Cargar alimentos desde CSV\n");
-        printf("3. Ver alimentos\n");
-        printf("4.Ver historial de alimentos\n");
-        printf("5. Planificar plan semanmal\n");
-        printf("6. Eliminar ultima comida ingerida\n");
-        printf("7. Conteo de calorias y meta diaria\n");
-        printf("8.Agregar comida propia\n");
-        printf("9. Agregar comida consumida\n");
-        printf("10. Salir\n");
-        printf("Seleccione una opcion: ");
+        printfProgresivo("Menu Principal\n", 1);
+        printfProgresivo("1. Ingresar datos personales", 1);
+        printfProgresivo("2. Cargar alimentos desde CSV", 1);
+        printfProgresivo("3. Ver alimentos", 1);
+        printfProgresivo("4. Ver historial de alimentos", 1);
+        printfProgresivo("5. Planificar plan semanmal", 1);
+        printfProgresivo("6. Eliminar ultima comida ingerida", 1);
+        printfProgresivo("7. Conteo de calorias y meta diaria", 1);
+        printfProgresivo("8. Agregar comida propia", 1);
+        printfProgresivo("9. Agregar comida consumida", 1);
+        printfProgresivo("10. Salir", 1);
+        printfProgresivo("Seleccione una opcion: ", 1);
         scanf("%d", &opcion);
         getchar(); // Limpiar el buffer de entrada
 
@@ -283,21 +330,24 @@ void menufitApp()
         switch (opcion)
         {
             case 1:
+                system("cls||clear");
                 ingresarDatosPersona(&usuario);
                 break;
             case 2:
-                mapaAlimentos = ReadCsv_AddToMap("alimentos.csv");
+                system("cls||clear");
+                mapaAlimentos = ReadCsv_AddToMap("tabla_de_alimentos.csv");
 
                 if (mapaAlimentos == NULL)
                 {
-                    printf("Error al cargar los alimentos.\n");
+                    printfProgresivoColor("Error al cargar los alimentos.\n", rojo, 5);
                 }
                 else
                 {
-                    printf("Alimentos cargados exitosamente.\n");
+                    printfProgresivoColor("Alimentos cargados exitosamente.\n", verde, 5);
                 }
                 break;
             case 3:
+                system("cls||clear");
                 if (mapaAlimentos != NULL)
                 {
                     mostrarAlimentosPorPagina(mapaAlimentos);
@@ -308,32 +358,38 @@ void menufitApp()
                 }
                 break;
             case 4:
+                system("cls||clear");
                 verHistorialAlimentos(historialAlimentos);
                 break;
             case 5:
-                printf("Planificacion semanal aun no implementada.\n");
+                system("cls||clear");
+                printfRojo("Planificacion semanal aun no implementada.\n");
                 break;
             case 6:
+                system("cls||clear");
                 eliminacionUltimaComida(&historialAlimentos);
                 break;
             case 7:
-                conteoCaloriasYMetaDiaria(historialAlimentos, &usuario);
+                system("cls||clear");
+                //conteoCaloriasYMetaDiaria(historialAlimentos, &usuario);
                 break;
             case 8:
+                system("cls||clear");
                 agregarComidaPropia(&mapaAlimentos);
                 break;
             case 9:
+                system("cls||clear");
                 agregarComidaConsumida(historialAlimentos, mapaAlimentos);
+                break;
             case 10:
+                system("cls||clear");
                 printf("Saliendo de FitFuel. ¡Hasta luego!\n");
                 return;
 
             default:
-                printf("Opcion no valida.\n");
+                printfRojo("Opcion no valida.\n");
         }
     } while (opcion != 10);
-    
-    
 }
 
 int main()
