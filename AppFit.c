@@ -73,40 +73,64 @@ void printfProgresivoColor(const char *mensaje, WORD color, int delay) {
     putchar('\n');
 }
 
+char* limpiarComillas(char* token) 
+{
+    if (token == NULL) return NULL;
+    size_t len = strlen(token);
+    if (len >= 2 && token[0] == '"' && token[len - 1] == '"') 
+    {
+        token[len - 1] = '\0';  
+        return token + 1;       
+    }
+    return token;
+}
+
+
 Map *ReadCsv_AddToMap(const char *nombreArchivo)
 {
     FILE *archivo = fopen(nombreArchivo, "r");
-    if (archivo == NULL)
-    {
+    if (!archivo) {
         perror("Error al abrir el archivo");
         return NULL;
     }
+
     Map *mapaDeAlimentos = map_create(is_equal_string);
-    char linea[256];
-    fgets(linea, sizeof(linea), archivo);
+    char linea[512];
+
+    fgets(linea, sizeof(linea), archivo); // Saltar encabezado
+
     while (fgets(linea, sizeof(linea), archivo))
     {
-        char *aux = strtok(linea, ",");
-        if (aux == NULL)
-            continue;
-
-        char *nombreAlimento = strtok(linea, ",");
         Alimento *alimento = malloc(sizeof(Alimento));
-        if (alimento == NULL)
-        {
-            perror("Error al asignar memoria para alimento");
+        if (!alimento) {
+            perror("Memoria insuficiente");
             fclose(archivo);
             return NULL;
         }
-        strncpy(alimento->nombre, nombreAlimento, sizeof(alimento->nombre) - 1);
-        alimento->nombre[sizeof(alimento->nombre) - 1] = '\0';
-        alimento->valorNutricional = atoi(strtok(NULL, ","));
-        alimento->carbohidratos = atof(strtok(NULL, ","));
-        alimento->proteinas = atof(strtok(NULL, ","));
-        alimento->grasas = atof(strtok(NULL, ","));
-        alimento->fibra = atof(strtok(NULL, ","));
-        map_insert(mapaDeAlimentos, nombreAlimento, alimento);
+
+        char *token = strtok(linea, ",");
+        if (!token) continue;
+        strncpy(alimento->nombre, token, sizeof(alimento->nombre));
+        alimento->nombre[strcspn(alimento->nombre, "\n")] = 0;
+
+        token = strtok(NULL, ",");
+        alimento->valorNutricional = token ? atoi(limpiarComillas(token)) : 0;
+
+        token = strtok(NULL, ",");
+        alimento->carbohidratos = token ? atof(limpiarComillas(token)) : 0.0;
+
+        token = strtok(NULL, ",");
+        alimento->proteinas = token ? atof(limpiarComillas(token)) : 0.0;
+
+        token = strtok(NULL, ",");
+        alimento->grasas = token ? atof(limpiarComillas(token)) : 0.0;
+
+        token = strtok(NULL, ",\n");
+        alimento->fibra = token ? atof(limpiarComillas(token)) : 0.0;
+
+        map_insert(mapaDeAlimentos, strdup(alimento->nombre), alimento);
     }
+
     fclose(archivo);
     return mapaDeAlimentos;
 }
