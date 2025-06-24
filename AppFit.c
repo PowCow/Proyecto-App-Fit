@@ -247,6 +247,7 @@ void verHistorialAlimentos(List *historial)
         dato = list_next(historial);
     }
 }
+
 void eliminacionUltimaComida(List **historial)
 {
     if (list_size(*historial) == 0)
@@ -266,6 +267,7 @@ void eliminacionUltimaComida(List **historial)
     }
     return;
 }
+
 void agregarComidaPropia(Map **mapaAlimentos)
 {
     Alimento *nuevoAlimento = malloc(sizeof(Alimento));
