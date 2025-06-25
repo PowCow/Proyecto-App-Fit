@@ -15,6 +15,7 @@ typedef struct
     float imc;
     int caloriasDiarias;
 } Usuario;
+
 typedef struct
 {
     char nombre[100]; // <-- Agregado
@@ -38,7 +39,8 @@ typedef struct
 
 }planSemanal;
 
-
+WORD rojo = FOREGROUND_RED | FOREGROUND_INTENSITY;
+WORD verde = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
 
 int is_equal_string(void *str1, void *str2)
 {
@@ -197,7 +199,7 @@ void ingresarDatosPersona(Usuario *persona)
     printf("Sexo: %c\n", persona->sexo);
     printf("Objetivo: %hd\n", persona->objetivo);
     printf("IMC: %.2f\n", persona->imc);
-    printf("Calorias diarias recomendadas: %d\n", persona->caloriasDiarias);
+    printf("Calorias diarias recomendadas: %d\n\n", persona->caloriasDiarias);
 }
 
 void mostrarAlimentosPorPagina(Map *mapaAlimentos)
@@ -274,14 +276,16 @@ planSemanal* crearPlanSemanal()
     return plan;
 }
 
-void agregarAlimentoADia(planSemanal* plan, int diaIndex, Alimento* alimento) {
+void agregarAlimentoADia(planSemanal* plan, int diaIndex, Alimento* alimento) 
+{
     if (diaIndex < 0 || diaIndex > 6) return;
     Alimento* copia = malloc(sizeof(Alimento));
     *copia = *alimento;
     list_pushBack(plan->dias[diaIndex].alimentosPorDia, copia);
 }
 
-void exportarPlanSemanalCSV(planSemanal* plan, const char* nombreArchivo) {
+void exportarPlanSemanalCSV(planSemanal* plan, const char* nombreArchivo) 
+{
     FILE* archivo = fopen(nombreArchivo, "w");
     if (!archivo) {
         perror("No se pudo crear el archivo");
@@ -311,7 +315,6 @@ void exportarPlanSemanalCSV(planSemanal* plan, const char* nombreArchivo) {
     printf("\n Plan semanal guardado en '%s'\n", nombreArchivo);
 }
 
-
 void eliminacionUltimaComida(List **historial)
 {
     if (list_size(*historial) == 0)
@@ -330,6 +333,66 @@ void eliminacionUltimaComida(List **historial)
         printf("Error al eliminar el ultimo alimento.\n");
     }
     return;
+}
+
+void conteoCaloriasYMetaDiaria(List *historialAlimentos, Usuario *usuario) 
+{
+    if (list_size(historialAlimentos) == 0) {
+        printfProgresivoColor("No hay alimentos en el historial.\n", rojo, 5);
+        return;
+    }
+
+    printfProgresivo("Calculando conteo de calorias y meta diaria...\n", 1);
+    Sleep(2000); 
+
+    float totalProteinas = 0, totalCarbohidratos = 0, totalGrasas = 0, totalFibra = 0;
+    int totalCalorias = 0;
+
+    Alimento *dato = (Alimento *)list_first(historialAlimentos);
+    while (dato != NULL) {
+        totalCalorias += dato->valorNutricional;
+        totalProteinas += dato->proteinas;
+        totalCarbohidratos += dato->carbohidratos;
+        totalGrasas += dato->grasas;
+        totalFibra += dato->fibra;
+        dato = (Alimento *)list_next(historialAlimentos);
+    }
+
+    char buffer[128];
+
+    printfProgresivo("Conteo de calorias y meta diaria:\n", 5);
+    sprintf(buffer, "Calorias diarias recomendadas: %d", usuario->caloriasDiarias);
+    printfProgresivo(buffer, 5);
+
+    printfProgresivoColor("Analisis:\n", verde, 5);
+
+    sprintf(buffer, "Total de calorias consumidas: %d", totalCalorias);
+    printfProgresivo(buffer, 5);
+
+    sprintf(buffer, "Total de proteinas consumidas: %.2f g", totalProteinas);
+    printfProgresivo(buffer, 5);
+
+    sprintf(buffer, "Total de carbohidratos consumidos: %.2f g", totalCarbohidratos);
+    printfProgresivo(buffer, 5);
+
+    sprintf(buffer, "Total de grasas consumidas: %.2f g", totalGrasas);
+    printfProgresivo(buffer, 5);
+
+    sprintf(buffer, "Total de fibra consumida: %.2f g", totalFibra);
+    printfProgresivo(buffer, 5);
+
+    
+    if (totalCalorias < usuario->caloriasDiarias) {
+        int faltan = usuario->caloriasDiarias - totalCalorias;
+        printfProgresivoColor("No se ha cumplido la meta de calorias diarias.", rojo, 5);
+        sprintf(buffer, "Faltan %d calorias para alcanzar tu meta diaria.", faltan);
+        printfProgresivoColor(buffer, rojo, 5);
+    } else {
+        printfProgresivoColor("¡Meta de calorias diarias cumplida!", verde, 5);
+        int excedente = totalCalorias - usuario->caloriasDiarias;
+        sprintf(buffer, "Te excediste por %d calorias.", excedente);
+        printfProgresivoColor(buffer, verde, 5);
+    }
 }
 
 void agregarComidaPropia(Map **mapaAlimentos)
@@ -356,31 +419,66 @@ void agregarComidaPropia(Map **mapaAlimentos)
     scanf("%f", &nuevoAlimento->fibra);
 
     map_insert(*mapaAlimentos, nuevoAlimento->nombre, nuevoAlimento);
-    printf("Nuevo alimento agregado exitosamente.\n");
+    printf("Nuevo alimento agregado exitosamente.\n\n");
     return;
 }
 
 void agregarComidaConsumida(List *historial, Map *mapaAlimentos)
 {
-    char nombreAlimento[100];
-    printf("Ingrese el nombre del alimento consumido: ");
-    fgets(nombreAlimento, sizeof(nombreAlimento), stdin); 
-    nombreAlimento[strcspn(nombreAlimento, "\n")] = 0; 
+    char consulta[100];
+    printf("Ingrese parte del nombre del alimento consumido: ");
+    fgets(consulta, sizeof(consulta), stdin);
+    consulta[strcspn(consulta, "\n")] = 0;
 
-    MapPair *pair = map_search(mapaAlimentos, nombreAlimento);
-    if (pair == NULL) {
-        printf("El alimento '%s' no se encuentra en el mapa de alimentos. \n", nombreAlimento);
+    List *coincidencias = list_create();
+    MapPair *pair = map_first(mapaAlimentos);
+    while (pair != NULL) {
+        Alimento *a = (Alimento *)pair->value;
+        if (strstr(a->nombre, consulta) != NULL) {
+            list_pushBack(coincidencias, a);
+        }
+        pair = map_next(mapaAlimentos);
+    }
+
+    if (list_size(coincidencias) == 0) {
+        printfRojo("No se encontraron alimentos que coincidan con la busqueda.\n");
+        list_clean(coincidencias);
         return;
     }
-    Alimento *alimento = (Alimento *)pair->value;
-    Alimento *nuevoAlimento = malloc(sizeof(Alimento));
-    if (nuevoAlimento == NULL) {
-        printf("Error al asignar memoria para el nuevo alimento.\n");
-        exit(EXIT_FAILURE);
+
+    printfVerde("\nResultados encontrados:\n");
+    int i = 0;
+    void *nodo = list_first(coincidencias);
+    while (nodo != NULL) {
+        Alimento *a = (Alimento *)nodo;
+        printf("[%d] %s - %d kcal\n", i, a->nombre, a->valorNutricional);
+        nodo = list_next(coincidencias);
+        i++;
     }
-    *nuevoAlimento = *alimento; // Copiar los datos del alimento encontrado
-    list_pushBack(historial, nuevoAlimento);
-    printf("Alimento '%s' agregado al historial de alimentos correctamente.\n", nombreAlimento);
+
+    int indice = -1;
+    printf("Seleccione el numero del alimento que desea agregar al historial: ");
+    scanf("%d", &indice);
+    getchar();
+
+    if (indice < 0 || indice >= list_size(coincidencias)) {
+        printfRojo("Indice invalido. No se agrego ningun alimento.\n");
+        list_clean(coincidencias);
+        return;
+    }
+
+    
+    Alimento *seleccionado = list_first(coincidencias);
+    for (int j = 0; j < indice; j++) {
+        seleccionado = list_next(coincidencias);
+    }
+
+    Alimento *copia = malloc(sizeof(Alimento));
+    *copia = *seleccionado;
+    list_pushBack(historial, copia);
+    printfVerde("Alimento agregado al historial correctamente.\n\n");
+
+    list_clean(coincidencias); 
 }
 
 int mostrarAlimentosConIndice(Map *mapaAlimentos, Alimento **buffer)
@@ -428,7 +526,8 @@ int buscarAlimentosPorNombre(Map *mapaAlimentos, Alimento **buffer, const char *
     return index;
 }
 
-void planificarComidasSemanal(Map *mapaAlimentos, planSemanal *plan) {
+void planificarComidasSemanal(Map *mapaAlimentos, planSemanal *plan) 
+{
     for (int i = 0; i < 7; i++) {
         printfVerde(plan->dias[i].dia);
         printf(" Cuantos alimentos desea agregar para este dia?: ");
@@ -461,7 +560,7 @@ void planificarComidasSemanal(Map *mapaAlimentos, planSemanal *plan) {
                 continue;
             }
 
-            printf("Seleccione el numero del alimento que desea agregar: ");
+            printf("Seleccione el numero del alimento que desea agregar: \n");
             int seleccion;
             scanf("%d", &seleccion);
             getchar();
@@ -480,15 +579,124 @@ void planificarComidasSemanal(Map *mapaAlimentos, planSemanal *plan) {
     printfVerde("\n¡Plan semanal creado y exportado exitosamente!\n");
 }
 
+planSemanal* importarPlanSemanalDesdeCSV(const char* nombreArchivo) 
+{
+    FILE* archivo = fopen(nombreArchivo, "r");
+    if (!archivo) {
+        perror("No se pudo abrir el archivo de plan semanal");
+        return NULL;
+    }
+
+    planSemanal* plan = crearPlanSemanal();
+    char linea[512];
+
+    fgets(linea, sizeof(linea), archivo); 
+
+    while (fgets(linea, sizeof(linea), archivo)) {
+        char* token = strtok(linea, ",");
+        if (!token) continue;
+
+        char dia[20];
+        strncpy(dia, token, sizeof(dia));
+        dia[sizeof(dia) - 1] = '\0';
+
+        token = strtok(NULL, ",");
+        if (!token) continue;
+        Alimento* a = malloc(sizeof(Alimento));
+        strncpy(a->nombre, token, sizeof(a->nombre));
+        a->nombre[strcspn(a->nombre, "\n")] = 0;
+
+        token = strtok(NULL, ",");
+        a->valorNutricional = token ? atoi(token) : 0;
+
+        token = strtok(NULL, ",");
+        a->proteinas = token ? atof(token) : 0.0;
+
+        token = strtok(NULL, ",");
+        a->carbohidratos = token ? atof(token) : 0.0;
+
+        token = strtok(NULL, ",");
+        a->grasas = token ? atof(token) : 0.0;
+
+        token = strtok(NULL, ",\n");
+        a->fibra = token ? atof(token) : 0.0;
+
+        for (int i = 0; i < 7; i++) {
+            if (strcmp(plan->dias[i].dia, dia) == 0) {
+                list_pushBack(plan->dias[i].alimentosPorDia, a);
+                break;
+            }
+        }
+    }
+
+    fclose(archivo);
+    return plan;
+}
+
+void mostrarPlanSemanal(planSemanal *plan)
+{
+    int caloriasSemana = 0;
+
+    for (int i = 0; i < 7; i++)
+    {
+        planPorDia *dia = &plan->dias[i];
+        printfVerde(dia->dia);
+        printf(":\n");
+
+        if (list_size(dia->alimentosPorDia) == 0)
+        {
+            printf("  (Sin alimentos registrados)\n\n");
+            continue;
+        }
+
+        int caloriasTotalesDia = 0;
+        void *nodo = list_first(dia->alimentosPorDia);
+        while (nodo != NULL)
+        {
+            Alimento *a = (Alimento *)nodo;
+            printf("  - %s (%d kcal)\n", a->nombre, a->valorNutricional);
+            caloriasTotalesDia += a->valorNutricional;
+            nodo = list_next(dia->alimentosPorDia);
+        }
+
+        printf("  Calorias totales del dia: %d kcal\n\n", caloriasTotalesDia);
+        caloriasSemana += caloriasTotalesDia;
+    }
+
+    printf("\n Calorias totales de la semana: %d kcal\n\n", caloriasSemana);
+    
+}
+
 void menufitApp()
 {
-    WORD rojo = FOREGROUND_RED | FOREGROUND_INTENSITY;
-    WORD verde = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+    planSemanal *plan = NULL;
 
+    printf("Deseas cargar tu plan semanal anterior? (S/N): ");
+    char respuesta;
+    scanf(" %c", &respuesta); getchar();
+
+    if (respuesta == 'S' || respuesta == 's') 
+    {
+        plan = importarPlanSemanalDesdeCSV("plan_semanal.csv");
+        if (plan == NULL) 
+        {
+            printfRojo("No se pudo cargar el plan anterior. Se creara uno nuevo.\n");
+            plan = crearPlanSemanal();
+        } 
+        else 
+        {
+            printfVerde("Plan semanal anterior cargado exitosamente.\n");
+        }
+    } 
+    else 
+    {
+        plan = crearPlanSemanal();
+    }
+    
     Usuario usuario;
     Map *mapaAlimentos = NULL;
     List *historialAlimentos = list_create();
-    planSemanal *plan = crearPlanSemanal();
+    
     if (historialAlimentos == NULL)
     {
         printf("Error al crear el historial de alimentos.\n");
@@ -503,13 +711,14 @@ void menufitApp()
         printfProgresivo("1. Ingresar datos personales", 1);
         printfProgresivo("2. Cargar alimentos desde CSV", 1);
         printfProgresivo("3. Ver alimentos", 1);
-        printfProgresivo("4. Ver historial de alimentos", 1);
-        printfProgresivo("5. Planificar plan semanmal", 1);
+        printfProgresivo("4. Agregar comida propia", 1);
+        printfProgresivo("5. Agregar comida consumida", 1);
         printfProgresivo("6. Eliminar ultima comida ingerida", 1);
         printfProgresivo("7. Conteo de calorias y meta diaria", 1);
-        printfProgresivo("8. Agregar comida propia", 1);
-        printfProgresivo("9. Agregar comida consumida", 1);
-        printfProgresivo("10. Salir", 1);
+        printfProgresivo("8. Ver historial de alimentos", 1);
+        printfProgresivo("9. Planificar plan semanal", 1);
+        printfProgresivo("10. Mostrar plan semanal", 1);
+        printfProgresivo("11. Salir", 1);
         printfProgresivo("Seleccione una opcion: ", 1);
         scanf("%d", &opcion);
         getchar(); // Limpiar el buffer de entrada
@@ -547,11 +756,11 @@ void menufitApp()
                 break;
             case 4:
                 system("cls||clear");
-                verHistorialAlimentos(historialAlimentos);
+                agregarComidaPropia(&mapaAlimentos);
                 break;
             case 5:
                 system("cls||clear");
-                planificarComidasSemanal(mapaAlimentos, plan);
+                agregarComidaConsumida(historialAlimentos, mapaAlimentos);
                 break;
             case 6:
                 system("cls||clear");
@@ -559,17 +768,28 @@ void menufitApp()
                 break;
             case 7:
                 system("cls||clear");
-                //conteoCaloriasYMetaDiaria(historialAlimentos, &usuario);
+                conteoCaloriasYMetaDiaria(historialAlimentos, &usuario);
                 break;
             case 8:
                 system("cls||clear");
-                agregarComidaPropia(&mapaAlimentos);
+                verHistorialAlimentos(historialAlimentos);
                 break;
             case 9:
                 system("cls||clear");
-                agregarComidaConsumida(historialAlimentos, mapaAlimentos);
+                planificarComidasSemanal(mapaAlimentos, plan);
                 break;
             case 10:
+                system("cls||clear");
+                if (plan == NULL) 
+                {
+                    printfRojo("No hay un plan semanal cargado.\n");
+                } 
+                else 
+                {
+                    mostrarPlanSemanal(plan);
+                }
+                break;
+            case 11:
                 system("cls||clear");
                 printf("Saliendo de FitFuel. ¡Hasta luego!\n");
                 return;
@@ -577,7 +797,7 @@ void menufitApp()
             default:
                 printfRojo("Opcion no valida.\n");
         }
-    } while (opcion != 10);
+    } while (opcion != 11);
 }
 
 int main()
