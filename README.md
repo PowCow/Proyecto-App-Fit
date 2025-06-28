@@ -377,4 +377,4 @@ Aporte en organización del CSV, escritura y eliminacion de datos
    
   
 ### Comunicador: Samuel Astudillo
-Aporte en comentarios del codigo
+Mis aportes fueron en la creacion de las funciones verHistorialAlimentos, eliminacionDecomidas, agregarComidaPropia, menufit y por ultimo agregue comentarios en el codigo.
