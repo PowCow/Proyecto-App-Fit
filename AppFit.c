@@ -225,7 +225,7 @@ void mostrarAlimentosPorPagina(Map *mapaAlimentos)
     int contador = 0;
     int numPagina = 1;
     int porPagina;
-    printf("Ingrese la cantidad de alimentos que desea ver por pagina: ");
+    printf("Ingrese la cantidad de alimentos que desea ver por pagina: \n");
     scanf("%d", &porPagina);
     getchar();
 
@@ -260,7 +260,7 @@ void mostrarAlimentosPorPagina(Map *mapaAlimentos)
     {
         printf("Pagina %d\n", numPagina);
     }
-    printf("Fin de la lista de alimentos.\n");
+    printf("\nFin de la lista de alimentos.\n\n");
 }
 
 /* Lo que hace esta funcion es recorrer la lista del historial de alimentos consumidos y mostrarnos con todos sus valores nutricionales los alimentos que hemos consumido, si es que no hemos
@@ -284,7 +284,7 @@ void verHistorialAlimentos(List *historial)
         printf("Carbohidratos: %.2f g\n", alimento->carbohidratos);
         printf("Grasas: %.2f g\n", alimento->grasas);
         printf("Fibra: %.2f g\n", alimento->fibra);
-        printf("-------------------------\n");
+        printf("-------------------------\n\n");
         dato = list_next(historial);
     }
 }
@@ -365,7 +365,7 @@ void eliminacionUltimaComida(List **historial)
     Alimento *ultimoAlimento = (Alimento *)list_popBack(*historial);
     if (ultimoAlimento != NULL)
     {
-        printf("Se ha eliminado el alimento: '%s'\n", ultimoAlimento->nombre);
+        printf("Se ha eliminado el alimento: '%s'\n\n", ultimoAlimento->nombre);
         free(ultimoAlimento);
     }
     else
@@ -423,7 +423,7 @@ void conteoCaloriasYMetaDiaria(List *historialAlimentos, Usuario *usuario)
     sprintf(buffer, "Total de grasas consumidas: %.2f g", totalGrasas);
     printfProgresivo(buffer, 5);
 
-    sprintf(buffer, "Total de fibra consumida: %.2f g", totalFibra);
+    sprintf(buffer, "Total de fibra consumida: %.2f g\n", totalFibra);
     printfProgresivo(buffer, 5);
 
     // Verifica si se ha cumplido la meta de calorías diarias
@@ -431,12 +431,12 @@ void conteoCaloriasYMetaDiaria(List *historialAlimentos, Usuario *usuario)
     {
         int faltan = usuario->caloriasDiarias - totalCalorias;
         printfProgresivoColor("No se ha cumplido la meta de calorias diarias.", rojo, 5);
-        sprintf(buffer, "Faltan %d calorias para alcanzar tu meta diaria.", faltan);
+        sprintf(buffer, "Faltan %d calorias para alcanzar tu meta diaria.\n", faltan);
         printfProgresivoColor(buffer, rojo, 5);
     }
     else
     {
-        printfProgresivoColor("¡Meta de calorias diarias cumplida!", verde, 5);
+        printfProgresivoColor("Meta de calorias diarias cumplida!", verde, 5);
         int excedente = totalCalorias - usuario->caloriasDiarias;
         sprintf(buffer, "Te excediste por %d calorias.", excedente);
         printfProgresivoColor(buffer, verde, 5);
@@ -504,7 +504,7 @@ void agregarComidaConsumida(List *historial, Map *mapaAlimentos)
         return;
     }
     // Muestra las coincidencias encontradas
-    printfVerde("\nResultados encontrados:\n");
+    printfVerde("\nResultados encontrados:\n\n");
     int i = 0;
     void *nodo = list_first(coincidencias);
     while (nodo != NULL)
@@ -516,7 +516,7 @@ void agregarComidaConsumida(List *historial, Map *mapaAlimentos)
     }
 
     int indice = -1;
-    printf("Seleccione el numero del alimento que desea agregar al historial: ");
+    printf("\nSeleccione el numero del alimento que desea agregar al historial: ");
     scanf("%d", &indice);
     getchar();
 
@@ -649,7 +649,7 @@ void planificarComidasSemanal(Map *mapaAlimentos, planSemanal *plan)
     }
 
     exportarPlanSemanalCSV(plan, "plan_semanal.csv");
-    printfVerde("\n¡Plan semanal creado y exportado exitosamente!\n");
+    printfVerde("\nPlan semanal creado y exportado exitosamente!\n");
 }
 
 /* Esta funcion lo que realiza es que al momento de iniciar el programa nos pregunta si queremos importar el plan semanal, lo cual lo que hace es cargar el plan semanal que creamos
@@ -886,7 +886,7 @@ void menufitApp()
                 map_clean(mapaAlimentos);
                 free(mapaAlimentos);
             }
-            printf("Saliendo de FitFuel. ¡Hasta luego!\n");
+            printf("Saliendo de FitFuel. Hasta luego!\n");
             return;
 
         default:
