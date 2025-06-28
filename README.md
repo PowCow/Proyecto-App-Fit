@@ -371,11 +371,10 @@ Realice las funciones de lectura del csv, creación del mapa de alimentos, ingre
 búsqueda por índice numérico y palabra clave, función para exportar y crear el archivo csv del plan semanal, creación de función conteo de calorías y meta diaria, además de actualizacion de comentarios y creación de la primera parte del readme. 
 
 ### Responsable de Integración y Constancia: Paulina Muñoz
-Busqueda y organizacion total del archivo CSV, comas, puntos, comillas, comidas y busqueda de datos. Realización de revisión constante hacia el proyecto, y retroalimentación de cada ejecución de la misma.
+Creación inicial de las estructuras del programa, busqueda y organizacion total del archivo CSV, comas, puntos, comillas, comidas y busqueda de datos. Realización de revisión constante hacia el proyecto, y retroalimentación de cada ejecución de la misma.
 
 ### Gestor de calidad: Flavio Luna
 Creación de funciones e implementación de los prints progresivos, prints de colores y prints progresivos de colores a lo largo de todos los menús. Creación e implementación de la opción 5, con la función agregarComidaConsumida(), correcciones menores a funciones menufitApp(), verHistorialAlimentos() y eliminacionUltimaComida(). Mediante varias iteraciones pulí los menús, quitando cualquier carácter válido, al igual que agregué saltos de línea donde corresponde, mejorando la apariencia final del programa. Aporte al README, específicamente con la parte de ejemplo de uso, junto con una revisión completa, asegurando su calidad.
    
-  
 ### Comunicador: Samuel Astudillo
 Mis aportes fueron en la creacion de las funciones verHistorialAlimentos, eliminacionDecomidas, agregarComidaPropia, menufit y por ultimo agregue comentarios en el codigo.
