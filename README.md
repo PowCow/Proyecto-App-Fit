@@ -368,7 +368,7 @@ Calorias totales de la semana: 2750 kcal
 
 ### Coordinador: Simón Martínez
 Realice las funciones de lectura del csv, creación del mapa de alimentos, ingresar datos de persona, calculo de IMC, cantidad de calorías necesarias, función para eliminar comillas, crear plan semanal, 
-búsqueda por índice numérico y palabra clave, función para exportar y crear el archivo csv del plan semanal, creación de función conteo de calorías y meta diaria, además de primera parte del readme. 
+búsqueda por índice numérico y palabra clave, función para exportar y crear el archivo csv del plan semanal, creación de función conteo de calorías y meta diaria, además de actualizacion de comentarios y creación de la primera parte del readme. 
 
 ### Responsable de Integración y Constancia: Paulina Muñoz
 Aporte en organización del CSV, escritura y eliminacion de datos  
