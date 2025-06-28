@@ -371,7 +371,7 @@ Realice las funciones de lectura del csv, creación del mapa de alimentos, ingre
 búsqueda por índice numérico y palabra clave, función para exportar y crear el archivo csv del plan semanal, creación de función conteo de calorías y meta diaria, además de actualizacion de comentarios y creación de la primera parte del readme. 
 
 ### Responsable de Integración y Constancia: Paulina Muñoz
-Aporte en organización del CSV, escritura y eliminacion de datos  
+Busqueda y organizacion total del archivo CSV, comas, puntos, comillas, comidas y busqueda de datos. Realización de revisión constante hacia el proyecto, y retroalimentación de cada ejecución de la misma.
 
 ### Gestor de calidad: Flavio Luna
    
