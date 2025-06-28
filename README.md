@@ -374,6 +374,7 @@ búsqueda por índice numérico y palabra clave, función para exportar y crear 
 Busqueda y organizacion total del archivo CSV, comas, puntos, comillas, comidas y busqueda de datos. Realización de revisión constante hacia el proyecto, y retroalimentación de cada ejecución de la misma.
 
 ### Gestor de calidad: Flavio Luna
+Creación de funciones e implementación de los prints progresivos, prints de colores y prints progresivos de colores a lo largo de todos los menús. Creación e implementación de la opción 5, con la función agregarComidaConsumida(), correcciones menores a funciones menufitApp(), verHistorialAlimentos() y eliminacionUltimaComida(). Mediante varias iteraciones pulí los menús, quitando cualquier carácter válido, al igual que agregué saltos de línea donde corresponde, mejorando la apariencia final del programa. Aporte al README, específicamente con la parte de ejemplo de uso, junto con una revisión completa, asegurando su calidad.
    
   
 ### Comunicador: Samuel Astudillo
