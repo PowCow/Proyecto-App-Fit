@@ -370,7 +370,7 @@ Calorias totales de la semana: 2750 kcal
 
 
 ### Responsable de Integración y Constancia: Paulina Muñoz
-   
+Aporte en organización del CSV, escritura y eliminacion de datos  
 
 ### Gestor de calidad: Flavio Luna
    
