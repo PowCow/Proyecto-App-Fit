@@ -366,15 +366,15 @@ Calorias totales de la semana: 2750 kcal
 
 ## Aportes individuales
 
-Coordinador: Simón Martínez
+###Coordinador: Simón Martínez
    -
 
-Responsable de Integración y Constancia: Paulina Muñoz
+###Responsable de Integración y Constancia: Paulina Muñoz
    -
    
-Gestor de calidad: Flavio Luna
+###Gestor de calidad: Flavio Luna
    - 
    
-Comunicador: Samuel Astudillo
+###Comunicador: Samuel Astudillo
    -
    
